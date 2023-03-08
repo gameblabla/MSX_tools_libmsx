@@ -42,6 +42,8 @@ int main(int argc, char *argv[]) {
     /* Generate header file */
     FILE *header_file = fopen("files_msx.h", "w");
     fprintf(header_file, "#ifndef FILES_MSX_H\n#define FILES_MSX_H\n\n");
+    int num;
+    
     for (int i = 0; i < num_files; i++) {
         char *filename = filenames[i];
         char array_name[MAX_FILENAME_LENGTH];
@@ -81,8 +83,23 @@ int main(int argc, char *argv[]) {
         fprintf(header_file, "extern const unsigned char %s[%d];\n", array_name, array_size);
         fclose(input_file);
 
-        // Only output bank number for part1 array
-        char *part_number = strstr(array_name, "_part");
+        // Extracts part before _part
+        char tmp[128];
+        snprintf(tmp, sizeof(tmp), "%s", array_name);
+		char* pos = strrchr(tmp, '_');
+		if (pos != NULL) {
+			*pos = '\0'; // set the character after the last "_" to null terminator
+			char* part_pos = strstr(tmp, "_part");
+			num = atoi(part_pos + strlen("_part")); // Extracts number
+			if (part_pos != NULL) {
+				*part_pos = '\0'; // set the first character of "_part" to null terminator
+			}
+		}
+		
+		fprintf(header_file, "#define SIZE_%s_PART_%d %d\n", tmp, num, array_size);
+
+		
+		char *part_number = strstr(array_name, "_part");
         if (part_number != NULL && atoi(part_number+strlen("_part")) == 1) {
             *part_number = '\0';
             fprintf(header_file, "#define %s_BANK %d\n", array_name, array_bank);

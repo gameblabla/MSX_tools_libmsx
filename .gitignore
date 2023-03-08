@@ -1,0 +1,7 @@
+output/
+*.sc5
+*.sr5
+*.elf
+*.o
+*.h
+*_pal*
