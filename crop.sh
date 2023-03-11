@@ -17,7 +17,9 @@ echo $BANKSIZE
 filename="$1"
 new_filename="$(echo "$filename" | sed 's/\(.*\)\./\1_/g')"
 
-dd if="$1" of="$1".bin count="${BANKSIZE}" bs=1
+dd if="$1" of="$1".bin.temp count="${BANKSIZE}" bs=1
+dd if="$1".bin.temp of="$1".bin skip=7 bs=1
+
 dd if="$1".bin of="$1_part1".bin bs=16K count=1
 dd if="$1".bin of="$1_part2".bin bs=16K skip=1
 
@@ -29,3 +31,5 @@ rm "$1_part1".bin "$1_part2".bin "$1".bin
 echo $new_filename
 mv $new_filename"_part1_bin".c output/
 mv $new_filename"_part2_bin".c output/
+rm *.temp
+rm *.bin
